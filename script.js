@@ -643,21 +643,28 @@ async function handleDownloadReport() {
 
     // Header Banner
     doc.setFillColor(...primaryColor);
-    doc.rect(0, 0, 210, 26, 'F');
+    doc.rect(0, 0, 210, 28, 'F');
 
     // Centered Title Heading
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(13.5);
-    doc.text('IP FINDER NETWORK & SECURITY REPORT', 105, 12, { align: 'center' });
+    doc.setFontSize(13);
+    doc.text('IP FINDER NETWORK & SECURITY REPORT', 105, 11, { align: 'center' });
 
     // Timestamp positioned below title on the right side
-    doc.setFontSize(8);
+    doc.setFontSize(7.8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(226, 232, 240);
-    doc.text(`Generated: ${timestamp}`, 196, 20, { align: 'right' });
+    doc.text(`Generated: ${timestamp}`, 196, 18, { align: 'right' });
 
-    let y = 35;
+    // Website Link right below timestamp on the right side
+    doc.setTextColor(199, 210, 254);
+    doc.text('https://youripfinder.vercel.app/', 196, 23, { 
+      align: 'right', 
+      url: 'https://youripfinder.vercel.app/' 
+    });
+
+    let y = 36;
 
     // Helper for Section Header
     const addSectionTitle = (title) => {
