@@ -386,6 +386,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
+  perspective: 1000px;
 }
 
 .ip-card {
@@ -397,7 +398,28 @@ body {
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
-  transition: border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  transform-style: preserve-3d;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform 0.15s ease-out;
+  will-change: transform;
+}
+
+.ip-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.14) 0%, transparent 65%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 20px;
+  z-index: 3;
+}
+
+.ip-card:hover::after {
+  opacity: 1;
 }
 
 .ip-card::before {
@@ -409,6 +431,7 @@ body {
   height: 3px;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
+  z-index: 4;
 }
 
 .ipv4-card::before {
@@ -421,8 +444,7 @@ body {
 
 .ip-card:hover {
   border-color: var(--border-glass-hover);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(99, 102, 241, 0.15);
 }
 
 .card-header {

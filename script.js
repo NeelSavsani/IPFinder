@@ -67,6 +67,9 @@ function init() {
     downloadBtn.addEventListener('click', handleDownloadReport);
   }
 
+  // Setup 3D Hover Tilt for IP Cards
+  init3dTiltCards();
+
   // Setup individual copy buttons
   document.querySelectorAll('.copy-btn').forEach(button => {
     button.addEventListener('click', () => {
@@ -75,6 +78,36 @@ function init() {
       if (targetEl && targetEl.textContent && !targetEl.classList.contains('font-loading')) {
         copyToClipboard(targetEl.textContent, button);
       }
+    });
+  });
+}
+
+// Setup 3D Tilt Hover Effect for IPv4 & IPv6 Cards
+function init3dTiltCards() {
+  const cards = document.querySelectorAll('.ip-card');
+
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      // Calculate tilt angles based on mouse offset relative to card center (Max ~12deg)
+      const rotateX = -((y - centerY) / centerY) * 12;
+      const rotateY = ((x - centerX) / centerX) * 12;
+
+      card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
+      
+      // Update dynamic cursor light glare coordinates
+      card.style.setProperty('--mouse-x', `${x.toFixed(1)}px`);
+      card.style.setProperty('--mouse-y', `${y.toFixed(1)}px`);
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
     });
   });
 }
