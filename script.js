@@ -667,55 +667,101 @@ async function handleDownloadReport() {
       y += 9;
     };
 
-    // Helper for Data Rows
-    const addRow = (label, val, isBold = false) => {
-      doc.setTextColor(100, 116, 139);
+    // Helper to sanitize non-ASCII/unicode characters (like ✓, 🛡️, ⚠️, 🚩) to avoid jsPDF font corruption
+    const sanitize = (text) => {
+      if (!text) return '';
+      return String(text)
+        .replace(/[✓✔]/g, '')
+        .replace(/[✕✖✗]/g, '')
+        .replace(/[🚩⚠️🛡️●•]/g, '')
+        .replace(/[^\x00-\x7F]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    };
+
+    // Helper for rendering structured rows in uniform Helvetica font with optional Bold main value
+    const addRow = (label, mainVal, subVal = '', isBoldMain = false) => {
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8.5);
+      doc.setFontSize(8.8);
+      doc.setTextColor(100, 116, 139);
       doc.text(label, 17, y);
 
-      doc.setTextColor(...textColor);
-      doc.setFont('helvetica', isBold ? 'bold' : 'normal');
+      doc.setFont('helvetica', isBoldMain ? 'bold' : 'normal');
+      doc.setFontSize(8.8);
+      doc.setTextColor(15, 23, 42);
 
-      const textVal = String(val || 'N/A').trim();
-      const splitText = doc.splitTextToSize(textVal, 115);
-      doc.text(splitText, 72, y);
+      const cleanMain = sanitize(mainVal);
+      const splitMain = doc.splitTextToSize(cleanMain, 118);
+      doc.text(splitMain, 72, y);
+      y += (splitMain.length * 4.6);
 
-      y += (splitText.length * 4.5) + 2.5;
+      if (subVal) {
+        const cleanSub = sanitize(subVal);
+        if (cleanSub) {
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8.2);
+          doc.setTextColor(71, 85, 105);
+          const splitSub = doc.splitTextToSize(cleanSub, 118);
+          doc.text(splitSub, 72, y);
+          y += (splitSub.length * 4.2);
+        }
+      }
+
+      y += 2.2;
     };
 
     // 1. IP Identification
     addSectionTitle('1. IP ADDRESS IDENTIFICATION');
-    addRow('IPv4 Address:', state.ipv4 || 'Not Detected', true);
-    addRow('IPv6 Address:', state.ipv6 || 'Not Supported', true);
-    y += 3;
+    addRow('IPv4 Address:', state.ipv4 || 'Not Detected', '', true);
+    addRow('IPv6 Address:', state.ipv6 || 'Not Supported', '', true);
+    y += 2;
 
     // 2. Geolocation Specs
     addSectionTitle('2. NETWORK & GEOLOCATION SPECS');
     addRow('Location:', detailLocationEl.textContent.trim());
     addRow('ISP / Telecom:', detailIspEl.textContent.trim());
-    addRow('Organization:', detailOrgEl.textContent.trim());
+    addRow('Organization / AS:', detailOrgEl.textContent.trim());
     addRow('Timezone:', detailTimezoneEl.textContent.trim());
-    y += 3;
+    y += 2;
 
-    // 3. Detective Security Signals
+    // 3. Detective Security Audit
     addSectionTitle('3. DETECTIVE SECURITY AUDIT');
-    addRow('ASN & ISP Check:', asnCheckVal.textContent.replace(/\s+/g, ' ').trim());
-    addRow('Reverse DNS PTR:', ptrCheckVal.textContent.replace(/\s+/g, ' ').trim());
-    addRow('WebRTC Audit:', webrtcCheckVal.textContent.replace(/\s+/g, ' ').trim());
-    addRow('Timezone Audit:', tzCheckVal.textContent.replace(/\s+/g, ' ').trim());
-    addRow('Detected Status:', vpnBadgeText.textContent.trim(), true);
-    y += 3;
 
-    // 4. Detective Conclusion Box
+    // Extract clean main & sub values for detective evidence boxes
+    const parseBoxVal = (containerEl) => {
+      if (!containerEl) return { main: '', sub: '' };
+      const mainEl = containerEl.querySelector('.val-safe, .val-alert');
+      const subEl = containerEl.querySelector('small');
+      return {
+        main: mainEl ? mainEl.textContent.trim() : containerEl.textContent.trim(),
+        sub: subEl ? subEl.textContent.trim() : ''
+      };
+    };
+
+    const asnData = parseBoxVal(asnCheckVal);
+    addRow('ASN & ISP Check:', asnData.main, asnData.sub, true);
+
+    const ptrData = parseBoxVal(ptrCheckVal);
+    addRow('Reverse DNS PTR:', ptrData.main, ptrData.sub, false);
+
+    const webrtcData = parseBoxVal(webrtcCheckVal);
+    addRow('WebRTC Audit:', webrtcData.main, webrtcData.sub, false);
+
+    const tzData = parseBoxVal(tzCheckVal);
+    addRow('Timezone Audit:', tzData.main, tzData.sub, false);
+
+    addRow('Detected Status:', vpnBadgeText.textContent.trim(), '', true);
+    y += 2;
+
+    // 4. Detective Conclusion Verdict
     addSectionTitle('4. DETECTIVE CONCLUSION VERDICT');
-    
+
     doc.setFillColor(248, 250, 252);
     doc.setDrawColor(203, 213, 225);
-    
-    const rawConclusion = detectiveConclusionText.textContent.trim();
+
+    const rawConclusion = sanitize(detectiveConclusionText.textContent);
     const splitConclusion = doc.splitTextToSize(rawConclusion, 172);
-    const boxHeight = (splitConclusion.length * 4.5) + 7;
+    const boxHeight = (splitConclusion.length * 4.5) + 6;
 
     doc.rect(14, y - 2, 182, boxHeight, 'FD');
     doc.setTextColor(15, 23, 42);
