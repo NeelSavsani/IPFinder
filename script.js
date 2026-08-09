@@ -645,14 +645,17 @@ async function handleDownloadReport() {
     doc.setFillColor(...primaryColor);
     doc.rect(0, 0, 210, 26, 'F');
 
+    // Centered Title Heading
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.text('IP FINDER NETWORK & SECURITY REPORT', 14, 17);
+    doc.setFontSize(13.5);
+    doc.text('IP FINDER NETWORK & SECURITY REPORT', 105, 12, { align: 'center' });
 
-    doc.setFontSize(8.5);
+    // Timestamp positioned below title on the right side
+    doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Generated: ${timestamp}`, 196, 17, { align: 'right' });
+    doc.setTextColor(226, 232, 240);
+    doc.text(`Generated: ${timestamp}`, 196, 20, { align: 'right' });
 
     let y = 35;
 
@@ -679,8 +682,8 @@ async function handleDownloadReport() {
         .trim();
     };
 
-    // Helper for rendering structured rows in uniform Helvetica font with optional Bold main value
-    const addRow = (label, mainVal, subVal = '', isBoldMain = false) => {
+    // Helper for rendering structured rows in uniform Helvetica font with optional Bold & custom color
+    const addRow = (label, mainVal, subVal = '', isBoldMain = false, customColor = null) => {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8.8);
       doc.setTextColor(100, 116, 139);
@@ -688,7 +691,12 @@ async function handleDownloadReport() {
 
       doc.setFont('helvetica', isBoldMain ? 'bold' : 'normal');
       doc.setFontSize(8.8);
-      doc.setTextColor(15, 23, 42);
+
+      if (customColor) {
+        doc.setTextColor(...customColor);
+      } else {
+        doc.setTextColor(15, 23, 42);
+      }
 
       const cleanMain = sanitize(mainVal);
       const splitMain = doc.splitTextToSize(cleanMain, 118);
@@ -750,7 +758,12 @@ async function handleDownloadReport() {
     const tzData = parseBoxVal(tzCheckVal);
     addRow('Timezone Audit:', tzData.main, tzData.sub, false);
 
-    addRow('Detected Status:', vpnBadgeText.textContent.trim(), '', true);
+    // Color-coded Detected Status (RED for VPN/Datacenter, GREEN for Personal IP)
+    const rawStatus = vpnBadgeText ? vpnBadgeText.textContent.trim() : '';
+    const isVpnDetected = rawStatus.toLowerCase().includes('vpn') || rawStatus.toLowerCase().includes('datacenter');
+    const statusColor = isVpnDetected ? [220, 38, 38] : [16, 185, 129];
+
+    addRow('Detected Status:', rawStatus, '', true, statusColor);
     y += 2;
 
     // 4. Detective Conclusion Verdict
