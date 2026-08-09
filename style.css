@@ -386,7 +386,6 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
-  perspective: 1000px;
 }
 
 .ip-card {
@@ -398,11 +397,10 @@ body {
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
-  transform-style: preserve-3d;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform 0.15s ease-out;
-  will-change: transform;
+  transition: border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
+/* Cursor Spotlight Glare Overlay */
 .ip-card::after {
   content: '';
   position: absolute;
@@ -410,7 +408,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.14) 0%, transparent 65%);
+  background: radial-gradient(circle 260px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.16) 0%, transparent 68%);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -444,7 +442,8 @@ body {
 
 .ip-card:hover {
   border-color: var(--border-glass-hover);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(99, 102, 241, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35), 0 0 25px rgba(99, 102, 241, 0.15);
 }
 
 .card-header {
