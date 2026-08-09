@@ -70,6 +70,9 @@ function init() {
   // Setup Cursor Spotlight Glow for IP Cards
   initSpotlightCards();
 
+  // Setup Global ClickSpark Effect
+  initClickSpark();
+
   // Setup individual copy buttons
   document.querySelectorAll('.copy-btn').forEach(button => {
     button.addEventListener('click', () => {
@@ -79,6 +82,86 @@ function init() {
         copyToClipboard(targetEl.textContent, button);
       }
     });
+  });
+}
+
+// React Bits ClickSpark Component Integration (Vanilla JS Port)
+function initClickSpark() {
+  const canvas = document.getElementById('clickSparkCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  let sparks = [];
+  let startTime = null;
+
+  const sparkColor = '#38bdf8';
+  const sparkSize = 10;
+  const sparkRadius = 22;
+  const sparkCount = 8;
+  const duration = 400;
+
+  const resizeCanvas = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  };
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  const easeOut = t => t * (2 - t);
+
+  const draw = timestamp => {
+    if (!startTime) startTime = timestamp;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    sparks = sparks.filter(spark => {
+      const elapsed = timestamp - spark.startTime;
+      if (elapsed >= duration) return false;
+
+      const progress = elapsed / duration;
+      const eased = easeOut(progress);
+
+      const distance = eased * sparkRadius;
+      const lineLength = sparkSize * (1 - eased);
+
+      const x1 = spark.x + distance * Math.cos(spark.angle);
+      const y1 = spark.y + distance * Math.sin(spark.angle);
+      const x2 = spark.x + (distance + lineLength) * Math.cos(spark.angle);
+      const y2 = spark.y + (distance + lineLength) * Math.sin(spark.angle);
+
+      ctx.strokeStyle = spark.color || sparkColor;
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      return true;
+    });
+
+    requestAnimationFrame(draw);
+  };
+
+  requestAnimationFrame(draw);
+
+  // Trigger spark burst on any window click
+  window.addEventListener('pointerdown', e => {
+    const x = e.clientX;
+    const y = e.clientY;
+    const now = performance.now();
+
+    const colors = ['#38bdf8', '#818cf8', '#c084fc', '#f472b6', '#ffffff'];
+
+    const newSparks = Array.from({ length: sparkCount }, (_, i) => ({
+      x,
+      y,
+      angle: (2 * Math.PI * i) / sparkCount,
+      startTime: now,
+      color: colors[i % colors.length]
+    }));
+
+    sparks.push(...newSparks);
   });
 }
 
