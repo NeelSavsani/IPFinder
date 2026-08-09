@@ -525,8 +525,27 @@ function setLoadingState(isLoading) {
   }
 }
 
+// Toast Notification Helper
+let toastTimeout;
+function showToast(message, icon = '✨') {
+  const toastEl = document.getElementById('toast');
+  const toastMsgEl = document.getElementById('toastMessage');
+  const toastIconEl = document.getElementById('toastIcon');
+  if (!toastEl) return;
+
+  toastMsgEl.textContent = message;
+  toastIconEl.textContent = icon;
+  
+  toastEl.classList.remove('hidden');
+
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toastEl.classList.add('hidden');
+  }, 2500);
+}
+
 // Clipboard helper
-async function copyToClipboard(text, btnElement) {
+async function copyToClipboard(text, btnElement, toastLabel = 'Copied to clipboard!') {
   try {
     await navigator.clipboard.writeText(text);
     if (btnElement) {
@@ -535,6 +554,7 @@ async function copyToClipboard(text, btnElement) {
         btnElement.classList.remove('copied');
       }, 2000);
     }
+    showToast(toastLabel, '📋');
   } catch (err) {
     console.error('Failed to copy to clipboard:', err);
   }
@@ -561,7 +581,7 @@ function handleCopyFullReport() {
     `=============================================================`
   ].join('\n');
 
-  copyToClipboard(report, null);
+  copyToClipboard(report, null, 'Full Report Copied to Clipboard!');
   
   const originalText = copyAllBtn.innerHTML;
   copyAllBtn.innerHTML = `
@@ -712,6 +732,7 @@ async function handleDownloadReport() {
 
     // Download PDF File
     doc.save(`IP_Finder_Report_${Date.now()}.pdf`);
+    showToast('PDF Report Saved to Downloads!', '📄');
 
   } catch (err) {
     console.error('jsPDF generation failed:', err);
