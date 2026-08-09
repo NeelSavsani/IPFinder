@@ -99,9 +99,9 @@ body {
 /* Application Layout */
 .app-container {
   width: 100%;
-  max-width: 1050px;
+  max-width: 1550px;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem;
+  padding: 2.5rem 2rem;
   z-index: 1;
   position: relative;
   display: flex;
