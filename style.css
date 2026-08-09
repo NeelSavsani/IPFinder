@@ -716,7 +716,7 @@ body {
   width: 100%;
   height: 320px;
   z-index: 1;
-  background: #090d16;
+  background: #ffffff;
 }
 
 /* Custom Map Marker Pin Styling */
@@ -729,19 +729,19 @@ body {
 .pin-dot {
   width: 14px;
   height: 14px;
-  background: #38bdf8;
+  background: #ef4444;
   border: 2.5px solid #ffffff;
   border-radius: 50%;
   position: absolute;
   top: 5px;
   left: 5px;
-  box-shadow: 0 0 14px #38bdf8;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.8);
 }
 
 .pin-pulse {
   width: 24px;
   height: 24px;
-  background: rgba(56, 189, 248, 0.45);
+  background: rgba(239, 68, 68, 0.45);
   border-radius: 50%;
   position: absolute;
   top: 0;
