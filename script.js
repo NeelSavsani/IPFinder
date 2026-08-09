@@ -260,6 +260,13 @@ async function fetchGeoDetails(ip) {
       ipTimezone = data.timezone;
       orgName = data.org || '';
       ispName = data.org || '';
+
+      if (data.loc) {
+        const parts = data.loc.split(',');
+        if (parts.length === 2) {
+          renderIpMap(parts[0], parts[1], city, region, country);
+        }
+      }
     }
   } catch (err) {
     console.warn('ipinfo.io precision lookup failed, trying fallback:', err);
@@ -298,6 +305,10 @@ async function fetchGeoDetails(ip) {
         ipTimezone = data.timezone;
         orgName = data.org || data.as || '';
         ispName = data.isp || '';
+
+        if (data.lat && data.lon) {
+          renderIpMap(data.lat, data.lon, city, region, country);
+        }
       }
     } catch (err) {
       console.warn('ip-api.com failed:', err);
@@ -814,6 +825,79 @@ async function handleDownloadReport() {
       downloadBtn.innerHTML = downloadBtnText;
     }
   }
+}
+
+// Interactive Mini Map Renderer with Leaflet.js
+let mapInstance = null;
+let markerInstance = null;
+
+function renderIpMap(lat, lon, city, region, country) {
+  const mapWrapper = document.getElementById('mapWrapper');
+  const mapCoordsBadge = document.getElementById('mapCoordsBadge');
+  if (!mapWrapper || !lat || !lon) return;
+
+  const numericLat = parseFloat(lat);
+  const numericLon = parseFloat(lon);
+  if (isNaN(numericLat) || isNaN(numericLon)) return;
+
+  mapWrapper.classList.remove('hidden');
+  mapCoordsBadge.textContent = `Lat: ${numericLat.toFixed(4)}, Lon: ${numericLon.toFixed(4)}`;
+
+  if (typeof L === 'undefined') {
+    console.warn('Leaflet map library not available');
+    return;
+  }
+
+  const locationLabel = [city, region, country].filter(Boolean).join(', ');
+
+  // Initialize or update map instance
+  if (!mapInstance) {
+    mapInstance = L.map('ipMap', {
+      center: [numericLat, numericLon],
+      zoom: 11,
+      zoomControl: true,
+      scrollWheelZoom: false
+    });
+
+    // Dark Matter CartoDB tiles for dark glassmorphism aesthetic matching
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(mapInstance);
+  } else {
+    mapInstance.setView([numericLat, numericLon], 11);
+  }
+
+  // Remove previous marker
+  if (markerInstance) {
+    mapInstance.removeLayer(markerInstance);
+  }
+
+  // Custom glowing neon pin icon
+  const customIcon = L.divIcon({
+    className: 'custom-map-pin',
+    html: `
+      <div class="pin-pulse"></div>
+      <div class="pin-dot"></div>
+    `,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
+  });
+
+  markerInstance = L.marker([numericLat, numericLon], { icon: customIcon }).addTo(mapInstance);
+
+  markerInstance.bindPopup(`
+    <div class="map-popup-content">
+      <strong>📍 IP Location Pinned</strong><br>
+      <span>${locationLabel || 'Detected Geolocation'}</span>
+    </div>
+  `).openPopup();
+
+  // Trigger leaflet resize recalculation after transition
+  setTimeout(() => {
+    mapInstance.invalidateSize();
+  }, 250);
 }
 
 // Initialize on DOM ready

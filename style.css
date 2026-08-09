@@ -668,6 +668,117 @@ body {
   opacity: 1;
 }
 
+/* Mini Map Section Styling */
+.map-wrapper {
+  margin-top: 1.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.map-wrapper.hidden {
+  display: none !important;
+}
+
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.map-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.map-coords-badge {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.ip-map-container {
+  width: 100%;
+  height: 320px;
+  z-index: 1;
+  background: #090d16;
+}
+
+/* Custom Map Marker Pin Styling */
+.custom-map-pin {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.pin-dot {
+  width: 14px;
+  height: 14px;
+  background: #38bdf8;
+  border: 2.5px solid #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  box-shadow: 0 0 14px #38bdf8;
+}
+
+.pin-pulse {
+  width: 24px;
+  height: 24px;
+  background: rgba(56, 189, 248, 0.45);
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: pulsePin 1.8s infinite ease-out;
+}
+
+@keyframes pulsePin {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Override Leaflet Popup dark styling */
+.leaflet-popup-content-wrapper {
+  background: rgba(15, 23, 42, 0.94) !important;
+  backdrop-filter: blur(12px) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+.leaflet-popup-tip {
+  background: rgba(15, 23, 42, 0.94) !important;
+}
+
+.leaflet-popup-content {
+  margin: 8px 12px !important;
+  line-height: 1.4 !important;
+  font-family: var(--font-sans) !important;
+  font-size: 0.85rem !important;
+}
+
+.leaflet-container {
+  font-family: var(--font-sans) !important;
+}
+
 /* VPN & Security Audit Card */
 .vpn-section {
   margin-top: 1.5rem;
