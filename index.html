@@ -225,7 +225,21 @@
                 </svg>
                 <span>Live IP Geolocation Map</span>
               </div>
-              <span id="mapCoordsBadge" class="map-coords-badge">Lat: --, Lon: --</span>
+
+              <div class="map-controls-group">
+                <div class="map-layer-switch" id="mapLayerSwitch">
+                  <button class="layer-btn active" data-layer="map" title="Standard Street Map View">
+                    <i class="fa-solid fa-map"></i> Map
+                  </button>
+                  <button class="layer-btn" data-layer="satellite" title="High-Res Satellite Imagery View">
+                    <i class="fa-solid fa-satellite"></i> Satellite
+                  </button>
+                  <button class="layer-btn" data-layer="terrain" title="Topographic Terrain View">
+                    <i class="fa-solid fa-mountain"></i> Terrain
+                  </button>
+                </div>
+                <span id="mapCoordsBadge" class="map-coords-badge">Lat: --, Lon: --</span>
+              </div>
             </div>
             <div id="ipMap" class="ip-map-container"></div>
           </div>

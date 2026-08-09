@@ -73,6 +73,14 @@ function init() {
   // Setup Global ClickSpark Effect
   initClickSpark();
 
+  // Setup Mini Map Layer Switcher (Map, Satellite, Terrain)
+  document.querySelectorAll('.map-layer-switch .layer-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const layerType = button.getAttribute('data-layer');
+      switchMapLayer(layerType);
+    });
+  });
+
   // Setup individual copy buttons
   document.querySelectorAll('.copy-btn').forEach(button => {
     button.addEventListener('click', () => {
@@ -930,9 +938,54 @@ async function handleDownloadReport() {
   }
 }
 
-// Interactive Mini Map Renderer with Leaflet.js
+// Interactive Mini Map Renderer with Leaflet.js (Map, Satellite, Terrain)
 let mapInstance = null;
 let markerInstance = null;
+let currentTileLayer = null;
+let currentLayerType = 'map';
+
+const mapTileProviders = {
+  map: {
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  },
+  satellite: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and GIS User Community',
+    maxZoom: 19
+  },
+  terrain: {
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution: 'Map data: &copy; OpenStreetMap contributors, SRTM | Style: &copy; OpenTopoMap',
+    maxZoom: 17
+  }
+};
+
+function switchMapLayer(layerType) {
+  if (!mapInstance || !mapTileProviders[layerType]) return;
+
+  if (currentTileLayer) {
+    mapInstance.removeLayer(currentTileLayer);
+  }
+
+  const provider = mapTileProviders[layerType];
+  currentTileLayer = L.tileLayer(provider.url, {
+    attribution: provider.attribution,
+    maxZoom: provider.maxZoom
+  }).addTo(mapInstance);
+
+  currentLayerType = layerType;
+
+  // Update button active state
+  document.querySelectorAll('.map-layer-switch .layer-btn').forEach(btn => {
+    if (btn.getAttribute('data-layer') === layerType) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+}
 
 function renderIpMap(lat, lon, city, region, country) {
   const mapWrapper = document.getElementById('mapWrapper');
@@ -962,11 +1015,7 @@ function renderIpMap(lat, lon, city, region, country) {
       scrollWheelZoom: false
     });
 
-    // Standard Bright White / Light Map Tile Layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 19
-    }).addTo(mapInstance);
+    switchMapLayer(currentLayerType);
   } else {
     mapInstance.setView([numericLat, numericLon], 11);
   }
