@@ -15,6 +15,9 @@
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./favicon.png" />
 
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
   <!-- jsPDF Library for Vector PDF Generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -174,7 +177,7 @@
 
           <div class="details-grid">
             <div class="detail-item">
-              <div class="detail-icon">📍</div>
+              <div class="detail-icon"><i class="fa-solid fa-location-dot" style="color: #ef4444;"></i></div>
               <div class="detail-content">
                 <div class="detail-label">Location (From IP)</div>
                 <div id="detailLocation" class="detail-value">—</div>
@@ -182,7 +185,7 @@
             </div>
 
             <div class="detail-item">
-              <div class="detail-icon">🌐</div>
+              <div class="detail-icon"><i class="fa-solid fa-globe" style="color: #38bdf8;"></i></div>
               <div class="detail-content">
                 <div class="detail-label">ISP / Telecom</div>
                 <div id="detailIsp" class="detail-value">—</div>
@@ -190,7 +193,7 @@
             </div>
 
             <div class="detail-item">
-              <div class="detail-icon">🏢</div>
+              <div class="detail-icon"><i class="fa-solid fa-building" style="color: #a855f7;"></i></div>
               <div class="detail-content">
                 <div class="detail-label">Organization / AS</div>
                 <div id="detailOrg" class="detail-value">—</div>
@@ -198,7 +201,7 @@
             </div>
 
             <div class="detail-item">
-              <div class="detail-icon">⏰</div>
+              <div class="detail-icon"><i class="fa-solid fa-clock" style="color: #f59e0b;"></i></div>
               <div class="detail-content">
                 <div class="detail-label">Timezone</div>
                 <div id="detailTimezone" class="detail-value">—</div>
@@ -247,7 +250,7 @@
             <div class="detective-evidence-grid">
               <div class="detective-box">
                 <div class="detective-box-header">
-                  <span class="detective-icon">🔎</span>
+                  <span class="detective-icon"><i class="fa-solid fa-server" style="color: #818cf8;"></i></span>
                   <span class="detective-label">ASN & ISP Check</span>
                 </div>
                 <div id="asnCheckVal" class="detective-val font-loading">Analyzing ASN & Org...</div>
@@ -255,7 +258,7 @@
 
               <div class="detective-box">
                 <div class="detective-box-header">
-                  <span class="detective-icon">🔎</span>
+                  <span class="detective-icon"><i class="fa-solid fa-network-wired" style="color: #38bdf8;"></i></span>
                   <span class="detective-label">DNS Lookup (PTR Record)</span>
                 </div>
                 <div id="ptrCheckVal" class="detective-val font-loading">Querying Reverse Hostname...</div>
@@ -263,7 +266,7 @@
 
               <div class="detective-box">
                 <div class="detective-box-header">
-                  <span class="detective-icon">🔎</span>
+                  <span class="detective-icon"><i class="fa-solid fa-shield-halved" style="color: #a855f7;"></i></span>
                   <span class="detective-label">WebRTC Leak Test</span>
                 </div>
                 <div id="webrtcCheckVal" class="detective-val font-loading">Gathering ICE Candidates...</div>
@@ -271,7 +274,7 @@
 
               <div class="detective-box">
                 <div class="detective-box-header">
-                  <span class="detective-icon">🔎</span>
+                  <span class="detective-icon"><i class="fa-solid fa-user-clock" style="color: #f59e0b;"></i></span>
                   <span class="detective-label">Timezone Audit</span>
                 </div>
                 <div id="tzCheckVal" class="detective-val font-loading">Comparing OS vs IP Timezone...</div>
@@ -307,7 +310,7 @@
 
   <!-- Toast Notification -->
   <div id="toast" class="toast-notification hidden">
-    <span id="toastIcon" class="toast-icon">✨</span>
+    <span id="toastIcon" class="toast-icon"><i class="fa-solid fa-circle-check" style="color: #10b981;"></i></span>
     <span id="toastMessage">Action completed!</span>
   </div>
 

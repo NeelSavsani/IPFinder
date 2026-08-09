@@ -479,43 +479,43 @@ async function runDetectiveAudit(ip, ipTimezone, orgName, ispName) {
   // 2. Render ASN Evidence Box
   asnCheckVal.classList.remove('font-loading');
   if (asnFlagged) {
-    asnCheckVal.innerHTML = `<span class="val-alert">🚩 Flagged (Cloud / Datacenter)</span><br><small style="color:var(--text-muted)">${asnString} (${fullOrgName})</small>`;
+    asnCheckVal.innerHTML = `<span class="val-alert"><i class="fa-solid fa-flag"></i> Flagged (Cloud / Datacenter)</span><br><small style="color:var(--text-muted)">${asnString} (${fullOrgName})</small>`;
   } else {
-    asnCheckVal.innerHTML = `<span class="val-safe">✓ Verified Consumer ISP</span><br><small style="color:var(--text-muted)">${asnString} (${fullOrgName})</small>`;
+    asnCheckVal.innerHTML = `<span class="val-safe"><i class="fa-solid fa-check"></i> Verified Consumer ISP</span><br><small style="color:var(--text-muted)">${asnString} (${fullOrgName})</small>`;
   }
 
   // 3. Render PTR Evidence Box
   ptrCheckVal.classList.remove('font-loading');
   if (ptrFlagged) {
-    ptrCheckVal.innerHTML = `<span class="val-alert">🚩 VPN Hostname Keyword</span><br><small style="color:var(--text-muted)">PTR: ${ptrHostname}</small>`;
+    ptrCheckVal.innerHTML = `<span class="val-alert"><i class="fa-solid fa-flag"></i> VPN Hostname Keyword</span><br><small style="color:var(--text-muted)">PTR: ${ptrHostname}</small>`;
   } else {
-    ptrCheckVal.innerHTML = `<span class="val-safe">✓ Standard Network Hostname</span><br><small style="color:var(--text-muted)">${ptrHostname}</small>`;
+    ptrCheckVal.innerHTML = `<span class="val-safe"><i class="fa-solid fa-check"></i> Standard Network Hostname</span><br><small style="color:var(--text-muted)">${ptrHostname}</small>`;
   }
 
   // 4. Render WebRTC Leak Box
   webrtcCheckVal.classList.remove('font-loading');
   if (webrtcResult.hasLeak) {
     const leakedList = webrtcResult.leakedIps.join(', ');
-    webrtcCheckVal.innerHTML = `<span class="val-safe">✓ Candidate Matched</span><br><small style="color:var(--text-muted)">Subnet IP: ${leakedList}</small>`;
+    webrtcCheckVal.innerHTML = `<span class="val-safe"><i class="fa-solid fa-check"></i> Candidate Matched</span><br><small style="color:var(--text-muted)">Subnet IP: ${leakedList}</small>`;
   } else {
-    webrtcCheckVal.innerHTML = `<span class="val-safe">✓ Candidate Matched</span><br><small style="color:var(--text-muted)">No Mismatch Leaked</small>`;
+    webrtcCheckVal.innerHTML = `<span class="val-safe"><i class="fa-solid fa-check"></i> Candidate Matched</span><br><small style="color:var(--text-muted)">No Mismatch Leaked</small>`;
   }
 
   // 5. Render Timezone Box with Equivalence Normalization (Asia/Calcutta == Asia/Kolkata)
   const isTzMismatch = checkTimezoneMismatch(systemTimezone, ipTimezone);
   tzCheckVal.classList.remove('font-loading');
   if (isTzMismatch) {
-    tzCheckVal.innerHTML = `<span class="val-alert">⚠️ Timezone Mismatch</span><br><small style="color:var(--text-muted)">OS: ${systemTimezone} vs IP: ${ipTimezone}</small>`;
+    tzCheckVal.innerHTML = `<span class="val-alert"><i class="fa-solid fa-triangle-exclamation"></i> Timezone Mismatch</span><br><small style="color:var(--text-muted)">OS: ${systemTimezone} vs IP: ${ipTimezone}</small>`;
   } else {
-    tzCheckVal.innerHTML = `<span class="val-safe">✓ Timezone Verified</span><br><small style="color:var(--text-muted)">Matched (${systemTimezone})</small>`;
+    tzCheckVal.innerHTML = `<span class="val-safe"><i class="fa-solid fa-check"></i> Timezone Verified</span><br><small style="color:var(--text-muted)">Matched (${systemTimezone})</small>`;
   }
 
-  // 🕵️ Generate Transparent "Detective's Conclusion"
+  // Generate Transparent "Detective's Conclusion"
   const isSuspicious = asnFlagged || ptrFlagged || isTzMismatch;
 
   if (isSuspicious) {
     vpnBadge.className = 'vpn-badge badge-vpn';
-    vpnBadgeText.textContent = 'VPN / Datacenter Connection ⚠️';
+    vpnBadgeText.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> VPN / Datacenter Connection';
 
     let evidencePoints = [];
     if (asnFlagged) evidencePoints.push(`association with a cloud hosting provider / datacenter (${asnString}, ${fullOrgName})`);
@@ -528,7 +528,7 @@ async function runDetectiveAudit(ip, ipTimezone, orgName, ispName) {
     `;
   } else {
     vpnBadge.className = 'vpn-badge badge-personal';
-    vpnBadgeText.textContent = 'Personal / Residential IP 🛡️';
+    vpnBadgeText.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Personal / Residential IP';
 
     const netType = isMobileCarrier ? 'mobile carrier network' : 'consumer residential ISP';
     detectiveConclusionText.innerHTML = `
@@ -558,14 +558,14 @@ function setLoadingState(isLoading) {
 
 // Toast Notification Helper
 let toastTimeout;
-function showToast(message, icon = '✨') {
+function showToast(message, iconHtml = '<i class="fa-solid fa-circle-check" style="color: #10b981;"></i>') {
   const toastEl = document.getElementById('toast');
   const toastMsgEl = document.getElementById('toastMessage');
   const toastIconEl = document.getElementById('toastIcon');
   if (!toastEl) return;
 
   toastMsgEl.textContent = message;
-  toastIconEl.textContent = icon;
+  toastIconEl.innerHTML = iconHtml;
   
   toastEl.classList.remove('hidden');
 
@@ -585,7 +585,7 @@ async function copyToClipboard(text, btnElement, toastLabel = 'Copied to clipboa
         btnElement.classList.remove('copied');
       }, 2000);
     }
-    showToast(toastLabel, '📋');
+    showToast(toastLabel, '<i class="fa-solid fa-clipboard-check" style="color: #38bdf8;"></i>');
   } catch (err) {
     console.error('Failed to copy to clipboard:', err);
   }
@@ -834,7 +834,7 @@ async function handleDownloadReport() {
 
     // Download PDF File
     doc.save(pdfFilename);
-    showToast('PDF Report Saved to Downloads!', '📄');
+    showToast('PDF Report Saved to Downloads!', '<i class="fa-solid fa-file-pdf" style="color: #a855f7;"></i>');
 
   } catch (err) {
     console.error('jsPDF generation failed:', err);
